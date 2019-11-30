@@ -7,20 +7,23 @@ import "./result.css";
 const ResultList = (props) => {
     const [symbol, setSymbol] = useState("");
     const [price, setPrice] = useState("");
+    const getServerData = async (search) => {
+        try {
+            let { data :{symbol, price} } = await axios.get(`http://localhost:3000/search/${search}`);
+            setSymbol(symbol);
+            setPrice(parseFloat(price).toFixed(2));
+        } catch (error) {
+            setSymbol("");
+            setPrice("");
+        }
+        
+    };
     useEffect(()=>{
-        axios.get(`http://localhost:3000/search/${props.search}`)
-            .then((res)=> res.data)
-            .then((data) => {
-                let {symbol: symbol1, price: price1} = data;
-                setSymbol(symbol1);
-                setPrice(parseFloat(price1).toFixed(2));
-                return;
-            })
-            .catch(()=>{
-                setSymbol("");
-                setPrice("");
-            });
-    });
+        
+          getServerData(props.search);
+         
+            
+    },[props.search]);
     return (
         <div>
             <ul className="ResultList">
@@ -41,5 +44,6 @@ ResultList.propTypes = {
     search: PropTypes.string.isRequired
 
 };
+
 
 export default ResultList;
